@@ -35,8 +35,8 @@ cd "$KERNEL_DIR"
 [[ -f "security/ids/ids_lsm.c" ]] || die "Missing security/ids/ids_lsm.c"
 [[ -f "security/ids/Makefile" ]] || die "Missing security/ids/Makefile"
 
-if ! grep -q 'CONFIG_SECURITY_IDS' security/Kconfig; then
-  die "security/Kconfig does not define CONFIG_SECURITY_IDS"
+if ! grep -q 'SECURITY_IDS' security/Kconfig; then
+  die "security/Kconfig does not define SECURITY_IDS"
 fi
 if ! grep -q 'obj-\$(CONFIG_SECURITY_IDS) += ids/' security/Makefile; then
   die "security/Makefile does not include ids/ build entry"
