@@ -132,6 +132,13 @@ Then continue with the IDS setup steps below from inside the Ubuntu VM.
 
 ## 5) Full setup from cloning the repo
 
+### Step 0: download the dependencies like git and build essentail by the followig below 
+
+```bash
+sudo apt update
+sudo apt install -y build-essential libncurses-dev bison flex libssl-dev libelf-dev bc git
+```
+
 ### Step A: Clone this project
 
 **Use this if you want to fork this repo and work on your own copy**
