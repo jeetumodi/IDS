@@ -13,6 +13,11 @@ In this project:
 - Logs are exposed through `/proc/ids_monitor`.
 - `ids_monitor.c` is an optional terminal UI to display those logs.
 
+Current hooks implemented in `security/ids/ids_lsm.c`:
+- `file_open` via `ids_file_open` (monitors sensitive file access like `/etc/shadow`)
+- `bprm_check_security` via `ids_bprm_check` (monitors executable launches)
+- `ptrace_access_check` via `ids_ptrace` (blocks cross-user ptrace attempts)
+
 Important:
 - This IDS is built into the kernel image, not loaded as a separate module.
 - So you verify with `/sys/kernel/security/lsm`, not `lsmod`.
@@ -25,6 +30,21 @@ Important:
 - `security/Makefile`: includes `ids/` in security build
 - `install_ids_kernel.sh`: setup automation script
 - `ids_monitor.c`: optional ncurses userspace monitor
+
+Project structure:
+
+```text
+.
+├── ids_monitor.c             # Userspace monitor (ncurses)
+├── install_ids_kernel.sh     # Automation script
+├── screenshots/              # Installation guide images
+└── security/
+	├── ids/
+	│   ├── ids_lsm.c         # Core LSM logic
+	│   └── Makefile          # Sub-directory build rules
+	├── Kconfig               # Modified to include IDS option
+	└── Makefile              # Modified to include ids/ directory
+```
 
 ## 3) Prerequisites
 
@@ -69,7 +89,7 @@ Choose the Ubuntu 22.04 desktop ISO downloaded from the official releases page.
 
 ### Step D: Set CPU and RAM
 
-- RAM: at least 4096 (also increase this also if your system has available ram) 
+- RAM: at least 4096 MB (increase this if your host system has available RAM)
 - CPUs: at least 4 (8 recommended if your system allows)
 
 ![CPU and RAM allocation](screenshots/cpu-ram.png)
@@ -85,7 +105,7 @@ Choose the Ubuntu 22.04 desktop ISO downloaded from the official releases page.
 
 Set disk size to at least 50 GB.
 
-![Virtual disk size setup](screenshots/staorage.png)
+![Virtual disk size setup](screenshots/storage.png)
 
 ### Step G: Complete VM creation and start installation
 
@@ -114,7 +134,7 @@ Then continue with the IDS setup steps below from inside the Ubuntu VM.
 
 ### Step A: Clone this project
 
-**This one is if you want to frok this repo and do it**
+**Use this if you want to fork this repo and work on your own copy**
 
 ```bash
 cd ~
@@ -122,7 +142,7 @@ git clone <your-github-repo-url> ids-lsm-share
 cd ids-lsm-share
 ```
 
-**Below one is if you want to clone this repo directly and do it**
+**Use this if you want to clone this repo directly**
 
 ```bash
 cd ~
@@ -140,6 +160,14 @@ git clone --depth 1 --branch v6.8 https://git.kernel.org/pub/scm/linux/kernel/gi
 ```
 
 ### Step C: Copy IDS files into Linux source tree
+
+Note: The `cp` commands below overwrite Linux source files in `~/linux-6.8/security/`.
+Create backups first:
+
+```bash
+cp ~/linux-6.8/security/Kconfig ~/linux-6.8/security/Kconfig.bak
+cp ~/linux-6.8/security/Makefile ~/linux-6.8/security/Makefile.bak
+```
 
 ```bash
 cd ~/ids-lsm-share
@@ -168,6 +196,41 @@ sudo reboot
 ```
 
 In GRUB Advanced options, select the new custom kernel once.
+
+### Optional: Make GRUB menu appear on every reboot
+
+If you want to always see the GRUB menu at startup (so kernel selection is easy each time), run:
+
+```bash
+sudo cp /etc/default/grub /etc/default/grub.bak
+sudo nano /etc/default/grub
+```
+
+In that file, set:
+
+```text
+GRUB_TIMEOUT_STYLE=menu
+GRUB_TIMEOUT=5
+```
+
+Then apply changes:
+
+```bash
+sudo update-grub
+```
+
+Quick verification:
+
+```bash
+grep -E '^GRUB_TIMEOUT_STYLE=|^GRUB_TIMEOUT=' /etc/default/grub
+```
+
+If needed, restore original config:
+
+```bash
+sudo cp /etc/default/grub.bak /etc/default/grub
+sudo update-grub
+```
 
 ## 6) Verify IDS is active
 
