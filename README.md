@@ -287,8 +287,3 @@ sudo update-grub
 ```
 
 3. Reboot and try custom kernel again.
-
-## 11) Sharing best practice
-
-Push only source changes and scripts from this repo.
-Do not push full compiled kernel artifacts (`vmlinux`, `*.o`, `*.ko`, etc.).
