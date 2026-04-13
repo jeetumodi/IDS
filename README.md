@@ -28,7 +28,91 @@ Important:
 - `install_ids_kernel.sh`: setup automation script
 - `ids_monitor.c`: optional ncurses userspace monitor
 
-## 3) Full setup from cloning the repo
+## 3) Prerequisites
+
+Before starting, choose one environment:
+
+- Option A (without VM, direct install): Use Ubuntu 22.04 LTS (64-bit) directly on your machine.
+- Option B (secure environment): Use Windows host + Oracle VM VirtualBox + Ubuntu 22.04 VM.
+
+Download Ubuntu 22.04 from:
+
+- https://releases.ubuntu.com/22.04/
+
+Recommended minimum VM resources for kernel build:
+
+- 4 CPU cores (8 is better)
+- 4 GB RAM minimum (8 GB recommended)
+- 50 GB disk
+
+## 4) Secure setup on Windows using VirtualBox (with screenshots)
+
+If you are on Windows and want isolation, create an Ubuntu 22.04 VM in VirtualBox before continuing.
+
+### Step A: Open VirtualBox and create a new VM
+
+Click New in Oracle VM VirtualBox Manager.
+
+![Create VM in VirtualBox](screenshots/page-1-new-option.jpg)
+
+### Step B: Enter VM name and OS details
+
+- Set a VM name (example: os-project).
+- Set OS type to Linux and Ubuntu (64-bit).
+- Keep unattended install disabled if you want manual control.
+
+![VM name and OS setup page](screenshots/name-page.png)
+
+### Step C: Set CPU and RAM
+
+- RAM: at least 4096 (also increase this also if your system has available ram) 
+- CPUs: at least 4 (8 recommended if your system allows)
+
+![CPU and RAM allocation](screenshots/cpu-ram.png)
+
+### Step D: Select Ubuntu 22.04 ISO
+
+Choose the Ubuntu 22.04 desktop ISO downloaded from the official releases page.
+
+![ISO image selection](screenshots/iso-image.png)
+
+### Step E: Set user and password
+
+- Create a user (example: user)
+- Keep a password you can remember
+
+![User and password setup](screenshots/user-pass.png)
+
+### Step F: Configure virtual disk size
+
+Set disk size to at least 50 GB.
+
+![Virtual disk size setup](screenshots/staorage.png)
+
+### Step G: Complete VM creation and start installation
+
+Start the VM and complete Ubuntu 22.04 installation.
+
+For VM users, use root and add sudo permission manually:
+
+```bash
+su
+visudo
+```
+
+Add this line in `visudo` (replace `user` with the exact VM username you created in Step E):
+
+```text
+user ALL=(ALL:ALL) ALL
+```
+
+Important: The username in `visudo` must exactly match the VM username.
+
+![Sudo permission check](screenshots/visudo.png)
+
+Then continue with the IDS setup steps below from inside the Ubuntu VM.
+
+## 5) Full setup from cloning the repo
 
 ### Step A: Clone this project
 
@@ -77,7 +161,7 @@ sudo reboot
 
 In GRUB Advanced options, select the new custom kernel once.
 
-## 4) Verify IDS is active
+## 6) Verify IDS is active
 
 After boot:
 
@@ -92,7 +176,7 @@ Expected:
 - `ids` appears in `/sys/kernel/security/lsm`.
 - `/proc/ids_monitor` exists and shows logs (or empty stream initially).
 
-## 5) Optional: run terminal monitor UI
+## 7) Optional: run terminal monitor UI
 
 ```bash
 cd ~/ids-lsm-share
@@ -100,7 +184,7 @@ gcc ids_monitor.c -o ids_monitor -lncurses
 ./ids_monitor
 ```
 
-## 6) What should you test?
+## 8) What should you test?
 
 Generate a few actions and re-check logs:
 
@@ -112,14 +196,14 @@ cat /proc/ids_monitor
 
 If IDS is working, new log lines should appear.
 
-## 7) Common mistakes
+## 9) Common mistakes
 
 - Setting `CONFIG_LSM` only in shell does nothing unless written in `.config`.
 - Using smart quotes instead of normal quotes in config values.
 - Trying to verify with `lsmod` for a built-in LSM.
 - Forgetting to boot the newly installed kernel from GRUB.
 
-## 8) If system does not boot custom kernel
+## 10) If system does not boot custom kernel
 
 1. Reboot and choose older working kernel from GRUB Advanced options.
 2. Rebuild initramfs for the custom kernel:
@@ -133,7 +217,7 @@ sudo update-grub
 
 3. Reboot and try custom kernel again.
 
-## 9) Sharing best practice
+## 11) Sharing best practice
 
 Push only source changes and scripts from this repo.
 Do not push full compiled kernel artifacts (`vmlinux`, `*.o`, `*.ko`, etc.).
