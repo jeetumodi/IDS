@@ -61,18 +61,18 @@ Click New in Oracle VM VirtualBox Manager.
 
 ![VM name and OS setup page](screenshots/name-page.png)
 
-### Step C: Set CPU and RAM
+### Step C: Select Ubuntu 22.04 ISO
+
+Choose the Ubuntu 22.04 desktop ISO downloaded from the official releases page.
+
+![ISO image selection](screenshots/iso-image.png)
+
+### Step D: Set CPU and RAM
 
 - RAM: at least 4096 (also increase this also if your system has available ram) 
 - CPUs: at least 4 (8 recommended if your system allows)
 
 ![CPU and RAM allocation](screenshots/cpu-ram.png)
-
-### Step D: Select Ubuntu 22.04 ISO
-
-Choose the Ubuntu 22.04 desktop ISO downloaded from the official releases page.
-
-![ISO image selection](screenshots/iso-image.png)
 
 ### Step E: Set user and password
 
