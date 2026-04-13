@@ -1,8 +1,6 @@
-# IDS LSM Project (Beginner Friendly)
+# IDS LSM Project
 
 This project shows how to add a custom IDS (Intrusion Detection System) using Linux Security Module (LSM) hooks in Linux 6.8.
-
-It is written so a first-year student can set it up from zero.
 
 ## 1) What is IDS and what is LSM?
 
@@ -116,9 +114,19 @@ Then continue with the IDS setup steps below from inside the Ubuntu VM.
 
 ### Step A: Clone this project
 
+**This one is if you want to frok this repo and do it**
+
 ```bash
 cd ~
 git clone <your-github-repo-url> ids-lsm-share
+cd ids-lsm-share
+```
+
+**Below one is if you want to clone this repo directly and do it**
+
+```bash
+cd ~
+git clone https://github.com/jeetumodi/IDS.git ids-lsm-share
 cd ids-lsm-share
 ```
 
