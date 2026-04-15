@@ -2,6 +2,10 @@
 
 This project shows how to add a custom IDS (Intrusion Detection System) using Linux Security Module (LSM) hooks in Linux 6.8.
 
+## Demonstration
+
+- Video demo: https://drive.google.com/file/d/1sqSBs2qgjHnuNrZHvuE7LPAiEK9UZ_b-/view?usp=sharing
+
 ## 1) What is IDS and what is LSM?
 
 - IDS: A system that watches activity and reports suspicious behavior.
@@ -107,7 +111,7 @@ Set disk size to at least 50 GB.
 
 ![Virtual disk size setup](screenshots/storage.png)
 
-### Step G: Complete VM creation and start installation
+### Step G: Complete VM creation and start installation(Password for then vm would as given during step)
 
 Start the VM and complete Ubuntu 22.04 installation.
 
@@ -115,6 +119,9 @@ For VM users, use root and add sudo permission manually:
 
 ```bash
 su
+```
+here enter the password that was given 
+```bash
 visudo
 ```
 
@@ -196,13 +203,102 @@ chmod +x ./install_ids_kernel.sh
 KERNEL_DIR=~/linux-6.8 ./install_ids_kernel.sh
 ```
 
+**If or any some reason you stop/cancel the process then delete the linux-6.80 and re run it from there**
+
+### OPTIONAL: verify wheather the CPU is begin used or not using htop
+
+- This is the command to install htop
+```bash
+sudo apt install htop
+```
+
+- This is the command to monitor
+```bash
+htop
+```
+
+- If permission is denied then run the below one\
+```bash
+sudo htop
+```
 ### Step E: Reboot and select custom kernel
 
 ```bash
 sudo reboot
 ```
 
-In GRUB Advanced options, select the new custom kernel once.
+Press **Esc** key on the booting screen so that you enter the GRUB menu
+- Go to advanced options
+- In Advanced options select the kernal which you build mostly it would not have `genric` in it.It will have some thing like `linux-6.8.0-dirty` or `linux-6.8.0`.
+choose and load it.
+
+## 6) Verify IDS is active
+After boot:
+
+```bash
+uname -r
+cat /sys/kernel/security/lsm
+cat /proc/ids_monitor
+```
+
+Expected:
+- Kernel version shows your newly built kernel release.
+- `ids` appears in `/sys/kernel/security/lsm`.
+- `/proc/ids_monitor` exists and shows logs (or empty stream initially).
+
+## 7) Optional: run terminal monitor UI
+
+```bash
+cd ~/ids-lsm-share
+gcc ids_monitor.c -o ids_monitor -lncurses
+./ids_monitor
+```
+
+Example monitor output while rules and alerts are generated:
+
+- check the rules and file of this image
+
+![IDS monitor output - view 1](screenshots/page-1-ui.png)
+
+- run Suspicious commands 
+
+![run suspicious command](screenshots/intermediate.png)
+
+- run IDS monitor again and see the rules ad file 
+
+![IDS monitor output - view 2](screenshots/page-2-ui.png)
+
+## 8) What should you test?
+
+Generate a few actions and re-check logs:
+
+```bash
+cat /etc/shadow >/dev/null
+sh -c 'echo test'
+cat /proc/ids_monitor
+```
+If IDS is working, new log lines should appear.
+
+## 9) Common mistakes
+
+- Setting `CONFIG_LSM` only in shell does nothing unless written in `.config`.
+- Using smart quotes instead of normal quotes in config values.
+- Trying to verify with `lsmod` for a built-in LSM.
+- Forgetting to boot the newly installed kernel from GRUB.
+
+## 10) If system does not boot custom kernel
+
+1. Reboot and choose older working kernel from GRUB Advanced options.
+2. Rebuild initramfs for the custom kernel:
+
+```bash
+cd ~/linux-6.8
+sudo depmod -a "$(make -s kernelrelease)"
+sudo update-initramfs -u -k "$(make -s kernelrelease)"
+sudo update-grub
+```
+
+3. Reboot and try custom kernel again.
 
 ### Optional: Make GRUB menu appear on every reboot
 
@@ -238,59 +334,3 @@ If needed, restore original config:
 sudo cp /etc/default/grub.bak /etc/default/grub
 sudo update-grub
 ```
-
-## 6) Verify IDS is active
-
-After boot:
-
-```bash
-uname -r
-cat /sys/kernel/security/lsm
-cat /proc/ids_monitor
-```
-
-Expected:
-- Kernel version shows your newly built kernel release.
-- `ids` appears in `/sys/kernel/security/lsm`.
-- `/proc/ids_monitor` exists and shows logs (or empty stream initially).
-
-## 7) Optional: run terminal monitor UI
-
-```bash
-cd ~/ids-lsm-share
-gcc ids_monitor.c -o ids_monitor -lncurses
-./ids_monitor
-```
-
-## 8) What should you test?
-
-Generate a few actions and re-check logs:
-
-```bash
-cat /etc/shadow >/dev/null
-sh -c 'echo test'
-cat /proc/ids_monitor
-```
-
-If IDS is working, new log lines should appear.
-
-## 9) Common mistakes
-
-- Setting `CONFIG_LSM` only in shell does nothing unless written in `.config`.
-- Using smart quotes instead of normal quotes in config values.
-- Trying to verify with `lsmod` for a built-in LSM.
-- Forgetting to boot the newly installed kernel from GRUB.
-
-## 10) If system does not boot custom kernel
-
-1. Reboot and choose older working kernel from GRUB Advanced options.
-2. Rebuild initramfs for the custom kernel:
-
-```bash
-cd ~/linux-6.8
-sudo depmod -a "$(make -s kernelrelease)"
-sudo update-initramfs -u -k "$(make -s kernelrelease)"
-sudo update-grub
-```
-
-3. Reboot and try custom kernel again.
