@@ -205,7 +205,7 @@ KERNEL_DIR=~/linux-6.8 ./install_ids_kernel.sh
 
 **If or any some reason you stop/cancel the process then delete the linux-6.80 and re run it from there**
 
-### OPTIONAL: verify wheather the CPU is begin used or not using htop
+### OPTIONAL: verify whether the all the cores of CPU assigned are being used or not using htop
 
 - This is the command to install htop
 ```bash
