@@ -67,7 +67,69 @@ Recommended minimum VM resources for kernel build:
 - 4 GB RAM minimum (8 GB recommended)
 - 50 GB disk
 
-## 4) Secure setup on Windows using VirtualBox (with screenshots)
+## 4) Install Oracle VM VirtualBox (Skip if already installed)
+
+Before creating the VM, install Oracle VM VirtualBox on your system.
+
+### Step 1: Download VirtualBox
+
+Go to the official download page:  
+https://www.virtualbox.org/wiki/Downloads
+
+Download the package for your host OS:
+
+- **Windows hosts** → for Windows
+- **macOS hosts** → for macOS
+- **Linux distributions** → for Ubuntu / Debian / Fedora, etc.
+
+
+### Step 2: Install VirtualBox
+
+#### On Windows
+1. Run the downloaded `.exe` file.
+2. Click **Next** through the installer.
+3. Keep default settings.
+4. Accept any network-related prompts.
+5. Click **Install**.
+
+#### On macOS
+1. Open the downloaded `.dmg` file.
+2. Double-click the `.pkg` installer.
+3. Follow the installation steps.
+4. If blocked, allow it via:
+   - System Settings → Privacy & Security → Allow
+
+#### On Ubuntu / Debian-based Linux
+```bash
+sudo apt update
+sudo apt install -y virtualbox
+```
+
+#### On Fedora
+```bash
+sudo dnf install @development-tools
+sudo dnf install VirtualBox
+```
+### Step 3: Install Extension Pack (Recommended)
+
+1. Download the VirtualBox Extension Pack from the same download page (make sure the version matches your installed VirtualBox).
+2. Open VirtualBox.
+3. Go to: File → Preferences → Extensions
+4. Click Add (+) and select the downloaded extension pack.
+5. Accept the license agreement.
+
+### Step 4: Verify Installation
+Run VirtualBox:
+```bash
+virtualbox
+```
+
+Or open it from your applications menu.
+
+You should see the VirtualBox Manager window.
+If it opens correctly, you are ready to create a VM.
+
+## 5) Secure setup on Windows using VirtualBox (with screenshots)
 
 If you are on Windows and want isolation, create an Ubuntu 22.04 VM in VirtualBox before continuing.
 
@@ -137,7 +199,7 @@ Important: The username in `visudo` must exactly match the VM username.
 
 Then continue with the IDS setup steps below from inside the Ubuntu VM.
 
-## 5) Full setup from cloning the repo
+## 6) Full setup from cloning the repo
 
 ### Step 0: download the dependencies like git and build essentail by the followig below 
 
@@ -232,7 +294,7 @@ Press **Esc** key on the booting screen so that you enter the GRUB menu
 - In Advanced options select the kernal which you build mostly it would not have `genric` in it.It will have some thing like `linux-6.8.0-dirty` or `linux-6.8.0`.
 choose and load it.
 
-## 6) Verify IDS is active
+## 7) Verify IDS is active
 After boot:
 
 ```bash
@@ -246,7 +308,7 @@ Expected:
 - `ids` appears in `/sys/kernel/security/lsm`.
 - `/proc/ids_monitor` exists and shows logs (or empty stream initially).
 
-## 7) Optional: run terminal monitor UI
+## 8) Optional: run terminal monitor UI
 
 ```bash
 cd ~/ids-lsm-share
@@ -268,7 +330,7 @@ Example monitor output while rules and alerts are generated:
 
 ![IDS monitor output - view 2](screenshots/page-2-ui.png)
 
-## 8) What should you test?
+## 9) What should you test?
 
 Generate a few actions and re-check logs:
 
@@ -279,14 +341,14 @@ cat /proc/ids_monitor
 ```
 If IDS is working, new log lines should appear.
 
-## 9) Common mistakes
+## 10) Common mistakes
 
 - Setting `CONFIG_LSM` only in shell does nothing unless written in `.config`.
 - Using smart quotes instead of normal quotes in config values.
 - Trying to verify with `lsmod` for a built-in LSM.
 - Forgetting to boot the newly installed kernel from GRUB.
 
-## 10) If system does not boot custom kernel
+## 11) If system does not boot custom kernel
 
 1. Reboot and choose older working kernel from GRUB Advanced options.
 2. Rebuild initramfs for the custom kernel:
